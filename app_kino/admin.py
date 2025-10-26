@@ -45,6 +45,12 @@ class HallAdmin(admin.ModelAdmin):
     raw_id_fields = ("cinema",)
     ordering = ("cinema", "name")
 
+    def get_inline_instances(self, request, obj=None):
+
+        if obj is None:
+            return []
+        return super().get_inline_instances(request, obj)
+
 
 class TicketInline(admin.TabularInline):
     model = Ticket

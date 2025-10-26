@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Поиск — Киноафиша{% endblock %}
+{% block content %}
+<h2>Результаты поиска{% if q %}: «{{ q }}»{% endif %}</h2>
+
+{% if q %}
+  <h3>Фильмы</h3>
+  <ul>
+    {% for m in movies %}
+      <li><a href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
+        {% if m.original_title %}<span class="muted">({{ m.original_title }})</span>{% endif %}
+      </li>
+    {% empty %}
+      <li class="muted">Ничего не найдено.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Кинотеатры</h3>
+  <ul>
+    {% for c in cinemas %}
+      <li>{{ c.name }} — {{ c.address }}</li>
+    {% empty %}
+      <li class="muted">Ничего не найдено.</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="muted">Введите запрос в строке поиска.</p>
+{% endif %}
+{% endblock %}

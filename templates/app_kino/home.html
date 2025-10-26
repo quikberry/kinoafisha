@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static posters %}
+{% block title %}Главная — Киноафиша{% endblock %}
+{% block content %}
+
+
+<section>
+  <div class="widget-header">
+    <h2>Календарь релизов</h2>
+  </div>
+  <ol class="widget-list">
+    {% for m in upcoming_releases %}
+      <li class="widget-item">
+        <a class="card-link" href="{% url 'app_kino:movie_detail' m.pk %}"></a>
+
+        <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}">
+
+        <div class="widget-text">
+          <a class="title" href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
+          {% if m.original_title %}<div class="muted">{{ m.original_title }}</div>{% endif %}
+          {% if m.release_date %}<div class="muted">Премьера: {{ m.release_date|date:"d E" }}</div>{% endif %}
+        </div>
+
+      </li>
+    {% empty %}
+      <p class="muted">Премьер скоро нет.</p>
+    {% endfor %}
+  </ol>
+</section>
+
+
+
+<!-- Виджет 3: Сегодня в кино -->
+<section>
+  <div class="widget-header">
+    <h2>Сегодня в кино</h2>
+  </div>
+  <ol class="widget-list">
+    {% for s in todays_sessions %}
+      <li class="widget-item">
+        <a class="card-link" href="{% url 'app_kino:movie_detail' s.movie.pk %}"></a>
+
+        <img src="{{ s.movie.poster|poster_url }}"
+     alt="{{ s.movie.title }}"
+     class="poster poster--sm">
+
+        <div class="widget-text">
+          <a class="title" href="{% url 'app_kino:movie_detail' s.movie.pk %}">{{ s.movie.title }}</a>
+          <div class="muted">
+            {{ s.start_time|date:"H:i" }} · {{ s.hall.cinema.name }}, {{ s.hall.name }} · {{ s.price }} ₽
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <p class="muted">Сегодня сеансов нет.</p>
+    {% endfor %}
+  </ol>
+</section>
+
+{% endblock %}

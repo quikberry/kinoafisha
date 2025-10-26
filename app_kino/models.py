@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 class User(models.Model):
     username = models.CharField("Логин", max_length=100, unique=True)
@@ -60,7 +61,7 @@ class Cinema(models.Model):
 
 
 class Hall(models.Model):
-    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, verbose_name="Кинотеатр")
+    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, verbose_name="Кинотеатр",null=True, blank=True)
     name = models.CharField("Название зала", max_length=100)
     seats = models.PositiveIntegerField("Количество мест")
 
@@ -86,8 +87,23 @@ class Favorite(models.Model):  # NEW
 
 
 class Session(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="Фильм")
-    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, verbose_name="Зал")
+    movie = models.ForeignKey(
+        Movie, on_delete=models.CASCADE,
+        related_name='sessions',           # ← явное имя
+        verbose_name="Фильм"
+    )
+    hall = models.ForeignKey(
+        Hall, on_delete=models.CASCADE,
+        related_name='sessions',           # ← по желанию, для симметрии
+        verbose_name="Зал"
+    )
+    cinema = models.ForeignKey(
+        Cinema,
+        on_delete=models.CASCADE,
+        related_name='sessions',
+        verbose_name="Кинотеатр",
+        null=True, blank=True,  # временно разрешаем NULL, чтобы миграция прошла
+    )
     start_time = models.DateTimeField("Время начала")
     price = models.DecimalField("Цена", max_digits=6, decimal_places=2)
 
@@ -99,9 +115,29 @@ class Session(models.Model):
     def __str__(self):
         return f"{self.movie} ({self.start_time:%d.%m %H:%M})"
 
+    def clean(self):
+        super().clean()
+        # используем *_id, чтобы не триггерить RelatedObjectDoesNotExist
+        if self.hall_id and self.cinema_id:
+            # hall.cinema_id получаем только если задан hall_id
+            if self.hall and self.hall.cinema_id != self.cinema_id:
+                raise ValidationError({"hall": "Выбранный зал не принадлежит указанному кинотеатру."})
+        # если хотя бы одно из полей не выбрано — валидацию не строгим
+
+    def save(self, *args, **kwargs):
+        # если выбран зал, но cinema ещё не задан — проставляем автоматически
+        if self.hall_id and not self.cinema_id:
+            # self.hall уже доступен (лениво подгрузится)
+            self.cinema_id = self.hall.cinema_id
+        super().save(*args, **kwargs)
+
 
 class Ticket(models.Model):
-    session = models.ForeignKey(Session, on_delete=models.CASCADE, verbose_name="Сеанс")
+    session = models.ForeignKey(
+        Session, on_delete=models.CASCADE,
+        related_name='tickets',            # ← явное имя
+        verbose_name="Сеанс"
+    )
     seat_number = models.PositiveIntegerField("Место")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Покупатель")
     is_paid = models.BooleanField("Оплачен", default=False)

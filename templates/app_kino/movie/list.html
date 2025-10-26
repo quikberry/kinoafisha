@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static posters %}
 {% block title %}Список фильмов — Киноафиша{% endblock %}
 
 {% block content %}
@@ -7,9 +8,7 @@
 <div class="grid">
     {% for m in movies %}
     <article class="card">
-        {% if m.poster %}
-            <img src="{{ m.poster }}" alt="{{ m.title }}">
-        {% endif %}
+       <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}" class="poster">
         <h3>
             <a href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
         </h3>

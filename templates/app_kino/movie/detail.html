@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static posters %}
 {% block title %}{{ movie.title }} — Киноафиша{% endblock %}
 
 {% block content %}
@@ -11,9 +12,7 @@
     </div>
 
     <div class="flex">
-        {% if movie.poster %}
-            <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="poster">
-        {% endif %}
+        <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}" class="poster">
         <p>{{ movie.description|default:"Описание фильма будет добавлено позже." }}</p>
     </div>
 </article>

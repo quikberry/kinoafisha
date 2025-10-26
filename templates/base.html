@@ -2,19 +2,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Киноафиша{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Подключение внешнего CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <meta charset="utf-8">
+  <title>{% block title %}Киноафиша{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5">
 </head>
 <body>
-<header>
-    <h1><a href="{% url 'app_kino:movie_list' %}">🎬 Киноафиша</a></h1>
-    <hr>
+
+<header class="site-header">
+  <div class="container">
+    <div class="logo">
+      <a>🎬 <span>Qфиша</span></a>
+    </div>
+    <nav class="nav-links">
+      <a href="{% url 'app_kino:movie_list' %}">Фильмы</a>
+      <a href="{% url 'app_kino:home' %}">Тренды</a>
+      <a href="{% url 'admin:index' %}">Админская панель</a>
+    </nav>
+      <form action="{% url 'app_kino:search' %}" method="get" class="search-bar">
+      <input type="text" name="q" placeholder="Поиск фильмов и кинотеатров...">
+      <button type="submit">🔍</button>
+    </form>
+  </div>
 </header>
 
-{% block content %}{% endblock %}
+<hr class="header-line">
+
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>© {{ now|date:"Y" }} Qфиша. Все права защищены.</p>
+</footer>
+
 </body>
 </html>
