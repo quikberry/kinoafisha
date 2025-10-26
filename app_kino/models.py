@@ -27,6 +27,7 @@ class Genre(models.Model):
 
 
 class Movie(models.Model):
+    original_title = models.CharField("Оригинальное название", max_length=200, blank=True)
     title = models.CharField("Название", max_length=200)
     description = models.TextField("Описание", blank=True)
     release_date = models.DateField("Дата выхода", null=True, blank=True)
@@ -69,6 +70,19 @@ class Hall(models.Model):
 
     def __str__(self):
         return f"{self.cinema} — {self.name}"
+
+class Favorite(models.Model):  # NEW
+    user = models.ForeignKey("User", on_delete=models.CASCADE, verbose_name="Пользователь")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="Фильм")
+    created_at = models.DateTimeField("Добавлено", default=timezone.now)
+
+    class Meta:
+        verbose_name = "Избранное"
+        verbose_name_plural = "Избранное"
+        unique_together = ("user", "movie")
+
+    def __str__(self):
+        return f"{self.user} → {self.movie}"
 
 
 class Session(models.Model):
