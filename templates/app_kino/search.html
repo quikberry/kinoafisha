@@ -1,29 +1,68 @@
 {% extends "base.html" %}
-{% block title %}Поиск — Киноафиша{% endblock %}
+{% load static posters %}
+
+{% block title %}Поиск: {{ q }} — Киноафиша{% endblock %}
+
 {% block content %}
-<h2>Результаты поиска{% if q %}: «{{ q }}»{% endif %}</h2>
+<h2>Результаты по запросу: “{{ q }}”</h2>
 
-{% if q %}
-  <h3>Фильмы</h3>
-  <ul>
-    {% for m in movies %}
-      <li><a href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
-        {% if m.original_title %}<span class="muted">({{ m.original_title }})</span>{% endif %}
-      </li>
-    {% empty %}
-      <li class="muted">Ничего не найдено.</li>
-    {% endfor %}
-  </ul>
+<p class="muted">
+  Найдено фильмов: {{ total_movies }} · кинотеатров: {{ total_cinemas }}
+</p>
 
-  <h3>Кинотеатры</h3>
-  <ul>
-    {% for c in cinemas %}
-      <li>{{ c.name }} — {{ c.address }}</li>
-    {% empty %}
-      <li class="muted">Ничего не найдено.</li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p class="muted">Введите запрос в строке поиска.</p>
+{% if cinemas %}
+  <section class="mt-16">
+    <h3>Кинотеатры</h3>
+    <ul class="cinema-list">
+      {% for c in cinemas %}
+        <li class="cinema-row">
+          <div>
+            <strong>{{ c.name }}</strong>
+            {% if c.address %} <span class="muted"> · {{ c.address }}</span>{% endif %}
+          </div>
+          <a href="#" class="btn-outline">Расписание</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 {% endif %}
+
+<section class="mt-24">
+  <h3>Фильмы</h3>
+
+  {% if page_obj %}
+    <div class="grid">
+      {% for m in page_obj %}
+        <a href="{% url 'app_kino:movie_detail' m.pk %}" class="card">
+          <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}">
+          <div class="card-content">
+            <h3>{{ m.title }}</h3>
+            <p class="movie-meta">
+              {% if m.release_date %}{{ m.release_date|date:"Y" }}{% endif %}
+              {% if m.country %} · {{ m.country }}{% endif %}
+            </p>
+            <p class="muted">
+              Сеансов впереди: {{ m.upcoming_sessions|default:0 }}
+            </p>
+            <p>{{ m.description|default:"Описание скоро будет" |truncatewords:20 }}</p>
+          </div>
+        </a>
+      {% empty %}
+        <p>Фильмов не найдено.</p>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?q={{ q }}&page={{ page_obj.previous_page_number }}">← Назад</a>
+        {% endif %}
+        <span>Стр. {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?q={{ q }}&page={{ page_obj.next_page_number }}">Вперёд →</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% endif %}
+</section>
 {% endblock %}

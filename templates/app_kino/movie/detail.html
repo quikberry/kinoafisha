@@ -39,7 +39,6 @@
 {% if sessions %}
   <h2 class="mt-32">Ближайшие сеансы (7 дней)</h2>
 
-  {# группировка по кинотеатрам прямо в шаблоне #}
   {% regroup sessions by hall.cinema as sessions_by_cinema %}
 
   <div class="cinema-groups">

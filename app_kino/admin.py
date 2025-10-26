@@ -55,11 +55,8 @@ class SessionAdmin(admin.ModelAdmin):
     list_filter = ("cinema", "hall", "movie", "start_time")
     date_hierarchy = "start_time"
     search_fields = ("movie__title", "hall__name", "cinema__name")
-    # ВАЖНО: никаких inlines билетов!
-    inlines = []  # <- чтобы точно не появлялся блок «Билеты»
+    inlines = []
 
-    # если у тебя в модели есть clean(), который заполняет cinema из hall — оставляем как есть
-    # иначе можно автоподставлять кинотеатр по выбранному залу через save_model()
 
 # ---------- TICKET ----------
 @admin.register(Ticket)

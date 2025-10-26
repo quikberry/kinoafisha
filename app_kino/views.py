@@ -1,6 +1,7 @@
 from datetime import timedelta
-from django.db.models import Count, Avg, Min
-from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from django.db.models import Count, Avg, Min, Q
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Movie, Session, Cinema
 
@@ -80,16 +81,98 @@ def movie_detail(request, pk: int):
         "similar": similar,
     })
 
+def _words(q: str) -> list[str]:
+    return [w for w in q.strip().split() if w]
+
+def _casefold_contains(haystack: str, needle: str) -> bool:
+    if haystack is None:
+        return False
+    return needle.casefold() in haystack.casefold()
+
 def search(request):
-    q = request.GET.get('q', '').strip()
-    movies = cinemas = []
-    if q:
-        movies = (Movie.objects
-                  .filter(title__icontains=q)
-                  .union(Movie.objects.filter(original_title__icontains=q))
-                  .distinct()
-                  .order_by('title'))
-        cinemas = (Cinema.objects
-                   .filter(name__icontains=q)
-                   .order_by('name'))
-    return render(request, 'app_kino/search.html', {'q': q, 'movies': movies, 'cinemas': cinemas})
+    q = (request.GET.get("q") or "").strip()
+    if not q:
+        return redirect("app_kino:movie_list")
+
+    terms = _words(q)
+    now = timezone.now()
+
+    # --- ДЕТЕКТ И ОБХОД ДЛЯ SQLITE ---
+    is_sqlite = settings.DATABASES["default"]["ENGINE"].endswith("sqlite3")
+
+    # ===== ФИЛЬМЫ =====
+    if is_sqlite:
+        # 1) подбираем id в Python (Unicode-friendly)
+        movies_raw = Movie.objects.values("id", "title", "original_title")
+        movie_ids = []
+        for m in movies_raw:
+            # для каждого слова требуем совпадение в title ИЛИ original_title
+            ok = all(
+                _casefold_contains(m.get("title") or "", w) or
+                _casefold_contains(m.get("original_title") or "", w)
+                for w in terms
+            )
+            if ok:
+                movie_ids.append(m["id"])
+
+        movies_qs = (
+            Movie.objects
+            .filter(pk__in=movie_ids)
+            .annotate(
+                upcoming_sessions=Count(
+                    "sessions",
+                    filter=Q(sessions__start_time__gte=now),
+                    distinct=True
+                )
+            )
+            .order_by("-upcoming_sessions", "title")
+        )
+    else:
+        # PostgreSQL / др. БД — можно обычный icontains
+        movie_filter = Q()
+        for w in terms:
+            movie_filter &= (Q(title__icontains=w) | Q(original_title__icontains=w))
+        movies_qs = (
+            Movie.objects
+            .filter(movie_filter)
+            .annotate(
+                upcoming_sessions=Count(
+                    "sessions",
+                    filter=Q(sessions__start_time__gte=now),
+                    distinct=True
+                )
+            )
+            .order_by("-upcoming_sessions", "title")
+        )
+
+    # ===== КИНОТЕАТРЫ =====
+    if is_sqlite:
+        cinemas_raw = Cinema.objects.values("id", "name", "address")
+        cinema_ids = []
+        for c in cinemas_raw:
+            ok = all(
+                _casefold_contains(c.get("name") or "", w) or
+                _casefold_contains(c.get("address") or "", w)
+                for w in terms
+            )
+            if ok:
+                cinema_ids.append(c["id"])
+        cinemas_qs = Cinema.objects.filter(pk__in=cinema_ids).order_by("name")
+    else:
+        cinema_filter = Q()
+        for w in terms:
+            cinema_filter &= (Q(name__icontains=w) | Q(address__icontains=w))
+        cinemas_qs = Cinema.objects.filter(cinema_filter).order_by("name")
+
+    # --- ПАГИНАЦИЯ ---
+    from django.core.paginator import Paginator
+    paginator = Paginator(movies_qs, 12)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    return render(request, "app_kino/search.html", {
+        "q": q,
+        "page_obj": page_obj,
+        "cinemas": cinemas_qs[:10],
+        "total_movies": movies_qs.count(),
+        "total_cinemas": cinemas_qs.count(),
+    })

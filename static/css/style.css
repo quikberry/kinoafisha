@@ -13,7 +13,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.6); /* ← Прозрачность 80% */
+  background: rgba(255, 255, 255, 0.6);
   z-index: -1;
 }
 
@@ -51,9 +51,13 @@ main {
   gap: 24px;
 }
 .card {
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+
   border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   position: relative;
@@ -134,7 +138,7 @@ img.movie-poster[alt=""]::before {
 
 .widget-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,.10);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.20);
   background: #fcfcfc;
 }
 
@@ -319,7 +323,6 @@ img.movie-poster[alt=""]::before {
 
 .mt-16{ margin-top:16px; } .mt-32{ margin-top:32px; }
 
-/* ====== CINEMA GROUPS / SESSIONS ====== */
 .cinema-groups{ display:flex; flex-direction:column; gap:16px; }
 .cinema-card{ background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
 .cinema-card__header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
@@ -337,3 +340,22 @@ img.movie-poster[alt=""]::before {
   border:1px solid #2563eb; color:#2563eb; text-decoration:none; transition:.2s;
 }
 .btn-outline:hover{ background:#2563eb; color:#fff; }
+
+.cinema-list{
+  list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:8px;
+}
+.cinema-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 12px; border-radius:10px; background:#fafafa;
+}
+.cinema-row:hover{ background:#f5f7ff; }
+
+.pagination{
+  display:flex; gap:12px; align-items:center; justify-content:center;
+  margin:20px 0 8px;
+}
+.pagination a{
+  text-decoration:none; padding:8px 12px; border-radius:8px;
+  border:1px solid #d0d7ff; color:#1e40af; transition:.2s;
+}
+.pagination a:hover{ background:#e9efff; }
