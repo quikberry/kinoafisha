@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Список фильмов — Киноафиша{% endblock %}
+
+{% block content %}
+<h2>Фильмы в прокате</h2>
+
+<div class="grid">
+    {% for m in movies %}
+    <article class="card">
+        {% if m.poster %}
+            <img src="{{ m.poster }}" alt="{{ m.title }}">
+        {% endif %}
+        <h3>
+            <a href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
+        </h3>
+        <div class="muted">
+            {% if m.release_date %}{{ m.release_date|date:"Y" }}{% endif %}
+            {% if m.country %} · {{ m.country }}{% endif %}
+            {% if m.age_rating %} · {{ m.age_rating }}{% endif %}
+        </div>
+        {% if m.description %}
+            <p>{{ m.description|truncatechars:120 }}</p>
+        {% endif %}
+    </article>
+    {% empty %}
+    <p>Фильмов пока нет в базе данных.</p>
+    {% endfor %}
+</div>
+{% endblock %}

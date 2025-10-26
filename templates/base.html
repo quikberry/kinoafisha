@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Киноафиша{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Подключение внешнего CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+    <h1><a href="{% url 'app_kino:movie_list' %}">🎬 Киноафиша</a></h1>
+    <hr>
+</header>
+
+{% block content %}{% endblock %}
+</body>
+</html>

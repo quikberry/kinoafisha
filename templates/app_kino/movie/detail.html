@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} — Киноафиша{% endblock %}
+
+{% block content %}
+<article>
+    <h2>{{ movie.title }}</h2>
+    <div class="muted">
+        {% if movie.release_date %}{{ movie.release_date|date:"Y" }}{% endif %}
+        {% if movie.country %} · {{ movie.country }}{% endif %}
+        {% if movie.age_rating %} · {{ movie.age_rating }}{% endif %}
+    </div>
+
+    <div class="flex">
+        {% if movie.poster %}
+            <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="poster">
+        {% endif %}
+        <p>{{ movie.description|default:"Описание фильма будет добавлено позже." }}</p>
+    </div>
+</article>
+
+<section>
+    <h3>Ближайшие сеансы</h3>
+    {% if sessions %}
+        <ul>
+            {% for s in sessions %}
+                <li>
+                    {{ s.start_time|date:"d.m H:i" }} — 
+                    {{ s.hall.cinema.name }}, {{ s.hall.name }} 
+                    — <strong>{{ s.price }} ₽</strong>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="muted">Сеансов пока нет.</p>
+    {% endif %}
+</section>
+{% endblock
