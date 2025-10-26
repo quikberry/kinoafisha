@@ -302,3 +302,38 @@ img.movie-poster[alt=""]::before {
 .search-bar button:hover {
   background: #1e40af;
 }
+
+.movie-detail{
+  display:flex; gap:24px; background:#fff; border-radius:16px;
+  padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+.movie-detail__poster img{
+  width:260px; height:390px; object-fit:cover; border-radius:12px;
+}
+.movie-detail__info{ flex:1; }
+.movie-title{ margin:0 0 4px; font-size:2rem; }
+.movie-subtitle{ color:#666; margin-bottom:8px; }
+.movie-meta{ color:#555; margin-bottom:10px; }
+.movie-tags{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 12px; }
+.tag{ background:#eef2ff; color:#374151; padding:4px 10px; border-radius:999px; font-size:.9rem; }
+
+.mt-16{ margin-top:16px; } .mt-32{ margin-top:32px; }
+
+/* ====== CINEMA GROUPS / SESSIONS ====== */
+.cinema-groups{ display:flex; flex-direction:column; gap:16px; }
+.cinema-card{ background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.cinema-card__header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+.cinema-card__header h3{ margin:0; }
+.cinema-card__meta{ color:#666; }
+
+.session-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+.session-row{
+  display:grid; grid-template-columns:160px 1fr 120px 120px; align-items:center;
+  gap:12px; padding:10px 12px; border-radius:10px; background:#fafafa;
+}
+.session-row .time{ font-weight:600; }
+.btn-outline{
+  justify-self:end; display:inline-block; padding:8px 14px; border-radius:8px;
+  border:1px solid #2563eb; color:#2563eb; text-decoration:none; transition:.2s;
+}
+.btn-outline:hover{ background:#2563eb; color:#fff; }

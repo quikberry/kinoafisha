@@ -1,36 +1,93 @@
 {% extends "base.html" %}
 {% load static posters %}
-{% block title %}{{ movie.title }} — Киноафиша{% endblock %}
+
+{% block title %}{{ movie.title }} — подробности{% endblock %}
 
 {% block content %}
-<article>
-    <h2>{{ movie.title }}</h2>
-    <div class="muted">
-        {% if movie.release_date %}{{ movie.release_date|date:"Y" }}{% endif %}
-        {% if movie.country %} · {{ movie.country }}{% endif %}
-        {% if movie.age_rating %} · {{ movie.age_rating }}{% endif %}
-    </div>
+<div class="movie-detail">
+  <div class="movie-detail__poster">
+    <img src="{{ movie.poster|poster_url }}" alt="{{ movie.title }}">
+  </div>
 
-    <div class="flex">
-        <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}" class="poster">
-        <p>{{ movie.description|default:"Описание фильма будет добавлено позже." }}</p>
-    </div>
-</article>
-
-<section>
-    <h3>Ближайшие сеансы</h3>
-    {% if sessions %}
-        <ul>
-            {% for s in sessions %}
-                <li>
-                    {{ s.start_time|date:"d.m H:i" }} — 
-                    {{ s.hall.cinema.name }}, {{ s.hall.name }} 
-                    — <strong>{{ s.price }} ₽</strong>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="muted">Сеансов пока нет.</p>
+  <div class="movie-detail__info">
+    <h1 class="movie-title">{{ movie.title }}</h1>
+    {% if movie.original_title %}
+      <div class="movie-subtitle">{{ movie.original_title }}</div>
     {% endif %}
-</section>
-{% endblock
+
+    <div class="movie-meta">
+      {% if movie.release_date %}{{ movie.release_date|date:"Y" }} · {% endif %}
+      {% if movie.country %}{{ movie.country }} · {% endif %}
+      {% if movie.duration %}{{ movie.duration }} мин · {% endif %}
+      {% if movie.age_rating %}{{ movie.age_rating }}{% endif %}
+    </div>
+
+    {% if movie.genres.all %}
+      <div class="movie-tags">
+        {% for g in movie.genres.all %}
+          <span class="tag">{{ g.name }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if movie.description %}
+      <p class="movie-description">{{ movie.description }}</p>
+    {% endif %}
+  </div>
+</div>
+
+{% if sessions %}
+  <h2 class="mt-32">Ближайшие сеансы (7 дней)</h2>
+
+  {# группировка по кинотеатрам прямо в шаблоне #}
+  {% regroup sessions by hall.cinema as sessions_by_cinema %}
+
+  <div class="cinema-groups">
+    {% for group in sessions_by_cinema %}
+      <div class="cinema-card">
+        <div class="cinema-card__header">
+          <h3>{{ group.grouper.name }}</h3>
+          {% for agg in by_cinema %}
+            {% if agg.cinema__id == group.grouper.id %}
+              <div class="cinema-card__meta">
+                сеансов: {{ agg.total }} · от {{ agg.min_price|floatformat:0 }} ₽
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <ul class="session-list">
+          {% for s in group.list %}
+            <li class="session-row">
+              <span class="time">{{ s.start_time|date:"d E, H:i" }}</span>
+              <span class="hall">Зал: {{ s.hall.name }}</span>
+              <span class="price">{{ s.price|floatformat:0 }} ₽</span>
+              <a href="#" class="btn-outline">Купить</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="muted mt-16">Сеансов на ближайшую неделю нет.</p>
+{% endif %}
+
+{% if similar %}
+  <h2 class="mt-32">Похожие фильмы</h2>
+  <div class="grid">
+    {% for m in similar %}
+      <a href="{% url 'app_kino:movie_detail' m.pk %}" class="card">
+        <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}">
+        <div class="card-content">
+          <h3>{{ m.title }}</h3>
+          <p class="movie-meta">
+            {% if m.release_date %}{{ m.release_date|date:"Y" }}{% endif %}
+            {% if m.country %} · {{ m.country }}{% endif %}
+          </p>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
