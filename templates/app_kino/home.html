@@ -55,4 +55,31 @@
   </ol>
 </section>
 
+<section>
+  <div class="widget-header">
+    <h2>Топ-3 популярных фильма за месяц</h2>
+    <a class="muted" href="{% url 'app_kino:movie_list' %}">Смотреть все →</a>
+  </div>
+
+  <ol class="widget-list">
+    {% for m in popular_movies %}
+      <li class="widget-item">
+        <a class="card-link" href="{% url 'app_kino:movie_detail' m.pk %}"></a>
+        <img src="{{ m.poster|poster_url }}" alt="{{ m.title }}">
+        <div class="widget-text">
+          <a class="title" href="{% url 'app_kino:movie_detail' m.pk %}">{{ m.title }}</a>
+          <div class="muted">
+            Сеансов за 30 дней: {{ m.sessions_30d }}
+            {% if m.avg_price_30d %}
+              · Средняя цена: {{ m.avg_price_30d|floatformat:0 }} ₽
+            {% endif %}
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <p class="muted">Нет данных о сеансах за последние 30 дней.</p>
+    {% endfor %}
+  </ol>
+</section>
+
 {% endblock %}

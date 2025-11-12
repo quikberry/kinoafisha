@@ -8,22 +8,29 @@ from .models import Movie, Session, Cinema
 def home(request):
     now = timezone.now()
     today = now.date()
-    week_later = now + timedelta(days=7)
+    month_plus = now - timedelta(days=30)
 
     upcoming_releases = (
         Movie.objects
         .filter(release_date__gte=today)
-        .order_by('release_date', 'title')[:10]
+        .order_by('release_date', 'title')[:3]
     )
 
     popular_movies = (
         Movie.objects
-        .filter(sessions__start_time__range=(now, week_later))
         .annotate(
-            sold=Count('sessions__tickets', distinct=True),
-            avg_price=Avg('sessions__price'),
+            sessions_30d=Count(
+                'sessions',
+                filter=Q(sessions__start_time__range=(month_plus, now)),
+                distinct=True
+            ),
+            avg_price_30d=Avg(
+                'sessions__price',
+                filter=Q(sessions__start_time__range=(month_plus, now))
+            )
         )
-        .order_by('-sold', 'title')[:10]
+        .filter(sessions_30d__gt=0)
+        .order_by('-sessions_30d', 'title')[:3]
     )
 
     todays_sessions = (
@@ -71,7 +78,7 @@ def movie_detail(request, pk: int):
         .filter(genres__in=movie.genres.all())
         .exclude(pk=movie.pk)
         .distinct()
-        .order_by("release_date")[:8]
+        .order_by("release_date")[:4]
     )
 
     return render(request, "app_kino/movie/detail.html", {
@@ -169,3 +176,4 @@ def search(request):
         "total_movies": movies_qs.count(),
         "total_cinemas": cinemas_qs.count(),
     })
+
