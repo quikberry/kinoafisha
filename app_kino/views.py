@@ -96,17 +96,13 @@ def search(request):
 
     terms = _words(q)
     now = timezone.now()
-
-    # --- ДЕТЕКТ И ОБХОД ДЛЯ SQLITE ---
+#обход кириллицы
     is_sqlite = settings.DATABASES["default"]["ENGINE"].endswith("sqlite3")
 
-    # ===== ФИЛЬМЫ =====
     if is_sqlite:
-        # 1) подбираем id в Python (Unicode-friendly)
         movies_raw = Movie.objects.values("id", "title", "original_title")
         movie_ids = []
         for m in movies_raw:
-            # для каждого слова требуем совпадение в title ИЛИ original_title
             ok = all(
                 _casefold_contains(m.get("title") or "", w) or
                 _casefold_contains(m.get("original_title") or "", w)
@@ -128,7 +124,6 @@ def search(request):
             .order_by("-upcoming_sessions", "title")
         )
     else:
-        # PostgreSQL / др. БД — можно обычный icontains
         movie_filter = Q()
         for w in terms:
             movie_filter &= (Q(title__icontains=w) | Q(original_title__icontains=w))
@@ -145,7 +140,6 @@ def search(request):
             .order_by("-upcoming_sessions", "title")
         )
 
-    # ===== КИНОТЕАТРЫ =====
     if is_sqlite:
         cinemas_raw = Cinema.objects.values("id", "name", "address")
         cinema_ids = []
@@ -164,7 +158,6 @@ def search(request):
             cinema_filter &= (Q(name__icontains=w) | Q(address__icontains=w))
         cinemas_qs = Cinema.objects.filter(cinema_filter).order_by("name")
 
-    # --- ПАГИНАЦИЯ ---
     from django.core.paginator import Paginator
     paginator = Paginator(movies_qs, 12)
     page_obj = paginator.get_page(request.GET.get("page"))

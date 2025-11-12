@@ -89,12 +89,12 @@ class Favorite(models.Model):  # NEW
 class Session(models.Model):
     movie = models.ForeignKey(
         Movie, on_delete=models.CASCADE,
-        related_name='sessions',           # ← явное имя
+        related_name='sessions',
         verbose_name="Фильм"
     )
     hall = models.ForeignKey(
         Hall, on_delete=models.CASCADE,
-        related_name='sessions',           # ← по желанию, для симметрии
+        related_name='sessions',
         verbose_name="Зал"
     )
     cinema = models.ForeignKey(
@@ -102,7 +102,7 @@ class Session(models.Model):
         on_delete=models.CASCADE,
         related_name='sessions',
         verbose_name="Кинотеатр",
-        null=True, blank=True,  # временно разрешаем NULL, чтобы миграция прошла
+        null=True, blank=True,
     )
     start_time = models.DateTimeField("Время начала")
     price = models.DecimalField("Цена", max_digits=6, decimal_places=2)
@@ -117,17 +117,12 @@ class Session(models.Model):
 
     def clean(self):
         super().clean()
-        # используем *_id, чтобы не триггерить RelatedObjectDoesNotExist
         if self.hall_id and self.cinema_id:
-            # hall.cinema_id получаем только если задан hall_id
             if self.hall and self.hall.cinema_id != self.cinema_id:
                 raise ValidationError({"hall": "Выбранный зал не принадлежит указанному кинотеатру."})
-        # если хотя бы одно из полей не выбрано — валидацию не строгим
 
     def save(self, *args, **kwargs):
-        # если выбран зал, но cinema ещё не задан — проставляем автоматически
         if self.hall_id and not self.cinema_id:
-            # self.hall уже доступен (лениво подгрузится)
             self.cinema_id = self.hall.cinema_id
         super().save(*args, **kwargs)
 
@@ -135,7 +130,7 @@ class Session(models.Model):
 class Ticket(models.Model):
     session = models.ForeignKey(
         Session, on_delete=models.CASCADE,
-        related_name='tickets',            # ← явное имя
+        related_name='tickets',
         verbose_name="Сеанс"
     )
     seat_number = models.PositiveIntegerField("Место")

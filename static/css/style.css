@@ -359,3 +359,28 @@ img.movie-poster[alt=""]::before {
   border:1px solid #d0d7ff; color:#1e40af; transition:.2s;
 }
 .pagination a:hover{ background:#e9efff; }
+
+.card-content h3,
+.grid .card h3,
+.grid .card h3 a {
+  background: linear-gradient(90deg, #7a00ff, #ff0066);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .3px;
+  margin: 6px 0;
+  text-align: center;
+  transition: background-position .3s ease, transform .2s ease;
+}
+
+.card-content h3:hover,
+.grid .card:hover h3,
+.grid .card:hover h3 a {
+  background-position: right center;
+  transform: translateY(-2px);
+}
+
+
