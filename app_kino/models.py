@@ -31,7 +31,7 @@ class Movie(models.Model):
     original_title = models.CharField("Оригинальное название", max_length=200, blank=True)
     title = models.CharField("Название", max_length=200)
     description = models.TextField("Описание", blank=True)
-    release_date = models.DateField("Дата выхода", null=True, blank=True)
+    release_date = models.DateField("Дата выхода", null=True)
     duration = models.PositiveIntegerField("Длительность")
     country = models.CharField("Страна", max_length=100, blank=True)
     age_rating = models.CharField("Возрастной рейтинг", max_length=10, blank=True)
