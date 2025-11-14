@@ -38,7 +38,7 @@ def home(request):
         .select_related('movie', 'hall', 'hall__cinema')
         .filter(start_time__date=today)
         .exclude(start_time__lt=now)
-        .order_by('start_time')[:10]
+        .order_by('start_time')[:3]
     )
 
     return render(request, 'app_kino/home.html', {
@@ -166,13 +166,13 @@ def search(request):
         cinemas_qs = Cinema.objects.filter(cinema_filter).order_by("name")
 
     from django.core.paginator import Paginator
-    paginator = Paginator(movies_qs, 12)
+    paginator = Paginator(movies_qs, 4)
     page_obj = paginator.get_page(request.GET.get("page"))
 
     return render(request, "app_kino/search.html", {
         "q": q,
         "page_obj": page_obj,
-        "cinemas": cinemas_qs[:10],
+        "cinemas": cinemas_qs[:4],
         "total_movies": movies_qs.count(),
         "total_cinemas": cinemas_qs.count(),
     })

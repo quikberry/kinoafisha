@@ -6,7 +6,6 @@ class SessionInline(admin.TabularInline):
     model = Session
     extra = 1
     fields = ("movie", "start_time", "price")
-    show_change_link = True
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
@@ -47,8 +46,6 @@ class SessionAdmin(admin.ModelAdmin):
     date_hierarchy = "start_time"
     search_fields = ("movie__title", "hall__name", "cinema__name")
     raw_id_fields = ('movie', 'hall', 'cinema')
-    inlines = []
-
 
 
 

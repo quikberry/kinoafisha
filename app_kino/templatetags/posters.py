@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 register = template.Library()
 
 def _looks_like_url(s: str) -> bool:
-    """Разрешаем только http(s) и относительные /media/... (на будущее)."""
     if not s:
         return False
     s = s.strip()
