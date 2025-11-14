@@ -3,7 +3,9 @@ from django.conf import settings
 from django.db.models import Count, Avg, Min, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.urls import reverse
 from .models import Movie, Session, Cinema
+from .forms import MovieForm
 
 def home(request):
     now = timezone.now()
@@ -176,4 +178,34 @@ def search(request):
         "total_movies": movies_qs.count(),
         "total_cinemas": cinemas_qs.count(),
     })
+
+def movie_create(request):
+    if request.method == "POST":
+        form = MovieForm(request.POST)
+        if form.is_valid():
+            movie = form.save()
+            return redirect("app_kino:movie_detail", pk=movie.pk)
+    else:
+        form = MovieForm()
+    return render(request, "app_kino/movie/form.html", {"form": form, "is_create": True})
+
+def movie_update(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    if request.method == "POST":
+        form = MovieForm(request.POST, instance=movie)
+        if form.is_valid():
+            form.save()
+            return redirect("app_kino:movie_detail", pk=movie.pk)
+    else:
+        form = MovieForm(instance=movie)
+    return render(request, "app_kino/movie/form.html", {"form": form, "mode": "edit", "movie": movie, "is_create": False})
+
+def movie_delete(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    if request.method == "POST":
+        movie.delete()
+        return redirect("app_kino:movie_list")
+    return render(request, "app_kino/movie/confirm_delete.html", {"movie": movie})
+
+
 

@@ -37,6 +37,8 @@ class Movie(models.Model):
     age_rating = models.CharField("Возрастной рейтинг", max_length=10, blank=True)
     poster = models.TextField("Постер (URL)", blank=True)
     genres = models.ManyToManyField(Genre, verbose_name="Жанры", related_name="movies")
+    created_at = models.DateTimeField("Создано", auto_now_add=True)
+    updated_at = models.DateTimeField("Обновлено", auto_now=True)
 
     class Meta:
         verbose_name = "Фильм"

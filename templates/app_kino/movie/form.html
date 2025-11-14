@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h2>{% if mode == 'edit' %}Редактировать фильм{% else %}Добавить фильм{% endif %}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      {{ form.as_p }}
+    </div>
+    <div style="text-align:center;">
+      <button type="submit" class="btn">Сохранить</button>
+      <a href="{% url 'app_kino:movie_list' %}" class="btn-outline">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

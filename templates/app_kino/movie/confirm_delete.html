@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h2>Удалить фильм</h2>
+  <p style="text-align:center;">Вы уверены, что хотите удалить <b>«{{ movie.title }}»</b>?</p>
+  <form method="post" style="text-align:center;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="{% url 'app_kino:movie_detail' movie.pk %}" class="btn-outline">Отмена</a>
+  </form>
+</div>
+{% endblock %}

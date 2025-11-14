@@ -383,4 +383,88 @@ img.movie-poster[alt=""]::before {
   transform: translateY(-2px);
 }
 
+.btn {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Вторичные кнопки (outline) ---------- */
+.btn-outline {
+  color: #2575fc;
+  border: 2px solid #2575fc;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-outline:hover {
+  background: #2575fc;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ---------- Красная кнопка удаления ---------- */
+.btn-danger {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+/* ---------- Блок формы ---------- */
+.form-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: border-color 0.2s;
+  font-size: 15px;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+  border-color: #2575fc;
+  outline: none;
+  box-shadow: 0 0 6px rgba(37, 117, 252, 0.4);
+}
+
 

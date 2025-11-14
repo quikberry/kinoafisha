@@ -72,6 +72,11 @@
   <p class="muted mt-16">Сеансов на ближайшую неделю нет.</p>
 {% endif %}
 
+<div class="mt-16" style="text-align:center">
+  <a href="{% url 'app_kino:movie_update' movie.pk %}" class="btn-outline">Редактировать</a>
+  <a href="{% url 'app_kino:movie_delete' movie.pk %}" class="btn-outline">Удалить</a>
+</div>
+
 {% if similar %}
   <h2 class="mt-32">Похожие фильмы</h2>
   <div class="grid">

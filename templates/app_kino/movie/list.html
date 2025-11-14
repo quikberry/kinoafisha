@@ -17,6 +17,10 @@
             {% if m.country %} · {{ m.country }}{% endif %}
             {% if m.age_rating %} · {{ m.age_rating }}{% endif %}
         </div>
+        <div class="muted mt-4" style="text-align:center">
+          <a href="{% url 'app_kino:movie_update' m.pk %}" class="btn-outline">Редактировать</a>
+          <a href="{% url 'app_kino:movie_delete' m.pk %}" class="btn-outline">Удалить</a>
+        </div>
         {% if m.description %}
             <p>{{ m.description|truncatechars:120 }}</p>
         {% endif %}

@@ -17,6 +17,7 @@
       <a href="{% url 'app_kino:movie_list' %}">Фильмы</a>
       <a href="{% url 'app_kino:home' %}">Тренды</a>
       <a href="{% url 'admin:index' %}">Админская панель</a>
+      <a href="{% url 'app_kino:movie_create' %}">Добавить фильм</a>
     </nav>
       <form action="{% url 'app_kino:search' %}" method="get" class="search-bar">
       <input type="text" name="q" placeholder="Поиск фильмов">
@@ -24,6 +25,7 @@
     </form>
   </div>
 </header>
+
 
 <hr class="header-line">
 
