@@ -11,6 +11,5 @@ class MovieForm(forms.ModelForm):
             "release_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"rows": 4}),
             "genres": forms.SelectMultiple(attrs={"size": 8})
-
         }
 
