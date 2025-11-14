@@ -23,6 +23,19 @@
       <input type="text" name="q" placeholder="Поиск фильмов">
       <button type="submit">🔍</button>
     </form>
+
+    <nav class="nav-links">
+      {% if user.is_authenticated %}
+        <span class="muted">Привет, {{ user.username }}!</span>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn-nav"> Выйти</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Войти</a>
+        <a href="{% url 'signup' %}">Регистрация</a>
+      {% endif %}
+    </nav>
   </div>
 </header>
 

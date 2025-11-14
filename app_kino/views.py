@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.urls import reverse
 from .models import Movie, Session, Cinema
 from .forms import MovieForm
+from django.contrib.auth.forms import UserCreationForm
 
 def home(request):
     now = timezone.now()
@@ -206,6 +207,17 @@ def movie_delete(request, pk):
         movie.delete()
         return redirect("app_kino:movie_list")
     return render(request, "app_kino/movie/confirm_delete.html", {"movie": movie})
+
+
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/signup.html", {"form": form})
 
 
 

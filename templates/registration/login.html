@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h2>Вход</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div style="text-align:center;">
+      <button class="btn" type="submit">Войти</button>
+      <a class="btn-outline" href="{% url 'signup' %}">Регистрация</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
